@@ -1,0 +1,219 @@
+DROP DATABASE sadaf;
+CREATE DATABASE sadaf;
+USE sadaf;
+
+
+CREATE TABLE levels (
+	id BIGINT NOT NULL AUTO_INCREMENT,
+    level_name VARCHAR(50) NOT NULL,
+    
+    PRIMARY KEY(id)
+);
+
+CREATE TABLE book (
+	id BIGINT NOT NULL AUTO_INCREMENT,
+    book_name VARCHAR(50) NOT NULL,
+    
+    PRIMARY KEY(id)
+);
+
+CREATE TABLE class (
+	id BIGINT NOT NULL AUTO_INCREMENT,
+    class_name VARCHAR(50) NOT NULL,
+    class_location VARCHAR(50) NOT NULL,
+    class_capacity VARCHAR(50),
+    
+    PRIMARY KEY(id)
+);
+
+CREATE TABLE languages (
+	id BIGINT NOT NULL AUTO_INCREMENT,
+    language_name VARCHAR(50) NOT NULL,
+    Language_info VARCHAR(10000),
+    
+    PRIMARY KEY(id)
+    
+);
+
+
+
+
+CREATE TABLE course (
+	id BIGINT NOT NULL AUTO_INCREMENT,
+    course_name VARCHAR(50) NOT NULL,
+    course_Type VARCHAR(100)  NOT NULL,
+    level_id BIGINT NOT NULL,
+    book_id BIGINT NOT NULL,
+    startdate  DATETIME NULL DEFAULT NULL,
+    
+     PRIMARY KEY(id),
+
+     CONSTRAINT course_levl
+		FOREIGN KEY (level_id)
+        REFERENCES Levels(id)
+        ON DELETE  CASCADE
+        ON UPDATE CASCADE,
+	
+    CONSTRAINT course_book
+		FOREIGN KEY (book_id)
+        REFERENCES book(id)
+        ON DELETE  CASCADE
+        ON UPDATE CASCADE
+        
+
+     );
+
+
+CREATE TABLE placment_test (
+	id BIGINT NOT NULL AUTO_INCREMENT,
+    language_id BIGINT NOT NULL,
+    result VARCHAR(50),
+    location VARCHAR(50),
+    dates  DATETIME NULL DEFAULT NULL,
+    
+    PRIMARY KEY(id),
+    
+    CONSTRAINT place_languge
+		FOREIGN KEY (id)
+		REFERENCES languages(id)
+        ON DELETE  CASCADE
+        ON UPDATE CASCADE
+);
+
+
+CREATE TABLE final_exams (
+	id BIGINT NOT NULL AUTO_INCREMENT,
+    course_id BIGINT NOT NULL,
+    result VARCHAR(50) NOt NULL,
+    location VARCHAR(50),
+	dates  DATETIME NULL DEFAULT NULL,
+    mark FLOAT NOT NULL,
+    
+     PRIMARY KEY(id),
+
+     CONSTRAINT cls_cons
+		FOREIGN KEY (course_id)
+        REFERENCES course(id)
+        ON DELETE  CASCADE
+        ON UPDATE CASCADE
+);
+
+
+CREATE TABLE teacher (
+	id BIGINT NOT NULL AUTO_INCREMENT,
+    teacher_name VARCHAR(50) NOT NULL,
+    teacher_grade VARCHAR(50),
+    languages_id BIGINT NOT NULL,
+    
+    
+     PRIMARY KEY(id),
+
+     CONSTRAINT tb_teacher
+		FOREIGN KEY (languages_id)
+        REFERENCES Languages(id)
+        ON DELETE  CASCADE
+        ON UPDATE CASCADE
+     );
+
+
+CREATE TABLE students (
+	id BIGINT NOT NULL AUTO_INCREMENT,
+    student_name VARCHAR(50) NOT NULL,
+    age INT NOT NULL,
+    student_status VARCHAR(50) NOT NULL,
+    level_id BIGINT NOT NULL,
+    phone_number VARCHAR(50),
+    email VARCHAR(50) NOT NULL, 
+	birth_date DATE NULL DEFAULT NULL,
+    address VARCHAR(200),
+    
+    PRIMARY KEY(id),
+    UNIQUE INDEX st_email(email),
+    
+    CONSTRAINT tb_student
+		FOREIGN KEY (level_id)
+        REFERENCES levels(id)
+        ON DELETE  CASCADE
+        ON UPDATE CASCADE
+        
+	);
+
+INSERT INTO levels(level_name)
+values('A1');
+INSERT INTO levels(level_name)
+values('A2');
+INSERT INTO levels(level_name)
+values('B1');
+INSERT INTO levels(level_name)
+values('B2');
+
+INSERT INTO book(book_name)
+    values ('starter');
+INSERT INTO book(book_name)
+    values ('intermediate');
+INSERT INTO book(book_name)
+    values ('advance');
+    
+INSERT INTO languages(language_name, language_info)
+values('englis', 'intermdiate engilsh in class 101');
+
+INSERT INTO languages(language_name, language_info)
+values('germany', 'german is angry');
+
+INSERT INTO languages(language_name, language_info)
+values('persian', 'persian is eassssssy');
+
+INSERT INTO course(course_name, course_type, level_id,book_id,startdate)
+	values('listening', 'standard', 1,1, '2000-5-10 08:00:00');
+
+INSERT INTO course(course_name, course_type, level_id,book_id,startdate)
+	values('reading', 'standard', 1,2, '2000-5-10 08:00:00');
+
+INSERT INTO final_exams(course_id, result, location, dates, mark)
+values(2, 'failed', 'factually of english', '2000-10-020 10:00:00', '30');
+
+INSERT INTO final_exams(course_id, result, location, dates, mark)
+values(1, 'success', 'factually of mathematic', '2000-10-020 10:00:00', '95');
+    
+INSERT INTO teacher(teacher_name, teacher_grade, languages_id)
+	values('razmara', 'master of english', 1);
+
+INSERT INTO teacher(teacher_name, teacher_grade, languages_id)
+	values('hajipur', 'master of cs', 2);
+
+INSERT INTO placment_test(language_id, result, location, dates)
+values(1, 'failed', 'factually of english', '2000-10-020 10:00:00');
+
+INSERT INTO placment_test(language_id, result, location, dates)
+values(3, 'success', 'factually of english', '2000-10-020 10:00:00');
+
+INSERT INTO class(class_name, class_location, class_capacity)
+values('c1','factually of english','20');
+
+INSERT INTO class(class_name, class_location, class_capacity)
+values('c2', 'factually of mathematic','10');
+
+INSERT INTO students(student_name, age, student_status, level_id, email, birth_date)
+values('sadaf karimpour', 21, 'passed', 1,'sadaf@gmail.com', '2001-01-23');
+
+INSERT INTO students(student_name, age, student_status, level_id, email, birth_date)
+values('sana farhmand', 21, 'passed', 2,'sana@gmail.com', '1999-01-23');
+
+INSERT INTO students(student_name, age, student_status, level_id, email, birth_date)
+values('yalda shirdel', 21, 'passed', 3,'yalda@gmail.com', '2000-01-23');
+
+#students names that have level 'A1'
+#select student_name
+#from students st
+#join levels le ON st.level_id = le.id
+#WHERE le.level_name = 'A1';
+
+#students informtion that have level 'A2' and course 'standard'
+select *
+from students st , course c
+join levels le ON st.level_id = le.id
+join levels ld ON c.level_id = ld.id
+WHERE le.level_name = 'A1'
+and   c.course_name='standard';
+
+
